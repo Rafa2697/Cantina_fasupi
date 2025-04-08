@@ -5,9 +5,6 @@ export default function Home() {
     const { user } = useUser()
     const { signOut } = useAuth()
 
-    console.log(user?.id
-        
-    )
     return (
         <View style={styles.container}>
             <Image source={{uri: user?.imageUrl}} style={styles.image}/>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import * as WebBrowser from "expo-web-browser"
 import { useOAuth } from "@clerk/clerk-expo"
 import * as Linking from "expo-linking"
+import  AdminForm  from "../components/forms/adminForm"
 
 WebBrowser.maybeCompleteAuthSession()
 
@@ -40,14 +41,19 @@ export default function SignIn() {
     }, [])
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Sign In</Text>
-            <Button
-                icon="logo-google"
-                title="Entrar com Google"
-                onPress={() => { onGoogleSignIn() }}
-                isLoading={isLoadding}
-            />
-
+            <View style={styles.wraperView}>
+                <Text style={styles.title}>Sign In Aluno</Text>
+                <Button
+                    icon="logo-google"
+                    title="Entrar com Google"
+                    onPress={() => { onGoogleSignIn() }}
+                    isLoading={isLoadding}
+                />
+            </View>
+            <View style={styles.wraperView}>
+                <Text style={styles.title}>Sign In Administrador</Text>
+                <AdminForm/>
+            </View>
         </View>
     )
 }
@@ -56,8 +62,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-around',
         backgroundColor: '#f0f0f0',
+    },
+    wraperView:{
+        width: "90%",
+        padding: 22,
+        justifyContent: "center",
+        alignItems: "center",
     },
     title: {
         fontSize: 24,
