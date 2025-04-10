@@ -25,7 +25,7 @@ export default function AdminForm() {
         }
 
         try {
-            const response = await fetch(`${APIURL}/admin`, {
+            const response = await fetch(`${APIURL}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -34,11 +34,16 @@ export default function AdminForm() {
             })
 
             const data = await response.json();
-            console.log('Resposta:', data);
 
-            if (response.ok) {
+           const isValidate = data.password === password;
+            if (isValidate == false) {
                 setIsLoading(false);
-                router.navigate('/dashAluno');
+                Alert.alert('Erro de Login', 'Senha incorreta, tente novamente!');
+            }
+
+            if (isValidate == true) {
+                setIsLoading(false);
+                router.navigate('/(admin)');
             } else {
                 setIsLoading(false);
                 Alert.alert('Erro de Login', data.error || 'Credenciais inválidas');

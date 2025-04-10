@@ -3,6 +3,7 @@ import { ClerkProvider, useAuth } from "@clerk/clerk-expo"
 import { useEffect } from "react"
 import { ActivityIndicator } from "react-native"
 import { TokenCache } from "@/storage/tokenCache"
+import { Stack } from 'expo-router/stack';
 
 const PUBLIC_CLERK = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY as string
 
@@ -24,7 +25,16 @@ function InitialLayout() {
 
 
   return isLoaded ? (
-    <Slot />
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right',
+      }}
+    >
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(public)" />
+      <Slot />
+    </Stack>
   ) : (
     <ActivityIndicator style={{flex: 1, justifyContent:"center", alignItems:"center"}} />
   )
