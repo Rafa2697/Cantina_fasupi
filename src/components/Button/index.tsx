@@ -7,7 +7,7 @@ interface ButtonProps extends TouchableOpacityProps {
     icon: keyof typeof Ionicons.glyphMap;
 }
 
-export function Button({ title, isLoading = false, icon, ...rest }: ButtonProps) {
+export default function Button({ title, isLoading = false, icon, ...rest }: ButtonProps) {
     return (
         <TouchableOpacity style={styles.constainer} disabled={isLoading} activeOpacity={0.8} {...rest}>
             {isLoading ? (

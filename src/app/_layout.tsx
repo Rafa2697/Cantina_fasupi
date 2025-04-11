@@ -1,49 +1,38 @@
 import { router, Slot } from "expo-router"
 import { ClerkProvider, useAuth } from "@clerk/clerk-expo"
-import { useEffect } from "react"
-import { ActivityIndicator } from "react-native"
-import { TokenCache } from "@/storage/tokenCache"
-import { Stack } from 'expo-router/stack';
-
-const PUBLIC_CLERK = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY as string
+import { useEffect, useState } from "react"
+import { ActivityIndicator, View } from "react-native"
+import { tokenCache } from '@clerk/clerk-expo/token-cache'
 
 function InitialLayout() {
   const { isSignedIn, isLoaded } = useAuth()
+  const [hasNavigated, setHasNavigated] = useState(false)
 
   useEffect(() => {
-    if (!isLoaded) {
-      return
+    if (isLoaded && !hasNavigated) {
+      setHasNavigated(true)
+      if (!isSignedIn) {
+        router.replace("/(public)")
+      }else {
+        router.replace("/(private)/(aluno)")
+      }
     }
+  }, [isLoaded, isSignedIn])
 
-    if (isSignedIn) {
-      router.replace("(auth)")
-    } else {
-      router.replace("(public)")
-    }
+  if (!isLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    )
+  }
 
-  }, [isSignedIn])
-
-
-  return isLoaded ? (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        animation: 'slide_from_right',
-      }}
-    >
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="(public)" />
-      <Slot />
-    </Stack>
-  ) : (
-    <ActivityIndicator style={{flex: 1, justifyContent:"center", alignItems:"center"}} />
-  )
+  return <Slot/>
 }
 
 export default function RootLayout() {
-
   return (
-    <ClerkProvider publishableKey={PUBLIC_CLERK} tokenCache={TokenCache}>
+    <ClerkProvider tokenCache={tokenCache} >
       <InitialLayout />
     </ClerkProvider>
   )

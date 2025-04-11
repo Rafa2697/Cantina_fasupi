@@ -1,7 +1,8 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Pressable, ActivityIndicator } from "react-native";
 import { useState, useRef } from "react";
-import { Link, router } from 'expo-router';
+import {  router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const APIURL = process.env.EXPO_PUBLIC_APIURL as string;
 
@@ -11,6 +12,14 @@ export default function AdminForm() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [viewPassword, setViewPassword] = useState<boolean>(true);
     const passwordInputRef = useRef<any>(null);
+
+    const saveToken = async (token: string) => {
+        try {
+            await AsyncStorage.setItem('@auth_tokem', token);
+        } catch (error) {
+            console.error('Error ao salvar token:', error);
+        }
+    }
 
     function onViewPassword() {
         setViewPassword(!viewPassword);
@@ -35,15 +44,19 @@ export default function AdminForm() {
 
             const data = await response.json();
 
-           const isValidate = data.password === password;
+            const isValidate = data.password === password;
             if (isValidate == false) {
                 setIsLoading(false);
                 Alert.alert('Erro de Login', 'Senha incorreta, tente novamente!');
             }
 
             if (isValidate == true) {
+                // Salva o token
+                if (data.token) {
+                    await saveToken(data.token);
+                }
                 setIsLoading(false);
-                router.navigate('/(admin)');
+                router.navigate('/(private)/(admin)');
             } else {
                 setIsLoading(false);
                 Alert.alert('Erro de Login', data.error || 'Credenciais inválidas');
@@ -118,7 +131,7 @@ const styles = StyleSheet.create({
         width: "100%",
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "center",
         gap: 7,
         backgroundColor: "#000",
         padding: 22,

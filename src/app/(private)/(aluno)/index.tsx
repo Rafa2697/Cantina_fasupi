@@ -1,15 +1,22 @@
 import { View, Text, StyleSheet, Image } from 'react-native'
-import { Button } from '../components/Button'
+import  Button  from '../../../components/Button/index'
 import { useAuth, useUser } from '@clerk/clerk-expo'
+import { useRouter } from 'expo-router'
 export default function Home() {
     const { user } = useUser()
     const { signOut } = useAuth()
+    const router = useRouter()
+
+    const handleSignOut = async () => {
+        await signOut()
+        router.replace('/(public)')
+    }
 
     return (
         <View style={styles.container}>
             <Image source={{uri: user?.imageUrl}} style={styles.image}/>
             <Text style={styles.text}>Olá, {user?.fullName}</Text>
-            <Button icon='exit' title='Sair' onPress={() => signOut()}/>
+            <Button icon='exit' title='Sair'  onPress={handleSignOut}/>
         </View>
     )
 }
