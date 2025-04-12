@@ -32,7 +32,6 @@ export default function AdminForm() {
             email: email,
             password: password,
         }
-
         try {
             const response = await fetch(`${APIURL}/login`, {
                 method: 'POST',
