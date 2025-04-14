@@ -1,7 +1,8 @@
-import {View, Text} from "react-native"
-import {useState, useEffect} from "react"
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, StyleSheet } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
+import { useState, useEffect } from "react"
 
-interface DataItem{
+interface DataItem {
     id: string;
     name: string;
     description: string;
@@ -26,10 +27,9 @@ export default function Index() {
     const fetchData = async () => {
         setLoading(true)
         try {
-            const response = await fetch(`${API}`);
+            const response = await fetch(`${API}/foods`);
             const result: DataItem[] = await response.json();
             setData(result);
-            console.log(result)
         } catch (error) {
             console.error('Error ao buscar dados: ', error)
         }
@@ -37,7 +37,7 @@ export default function Index() {
     }
     const fetchCategories = async () => {
         try {
-            const response = await fetch("/api/categoriaAlimentos");
+            const response = await fetch(`${API}/categories`);
             const result = await response.json();
             setCategories(result);
         } catch (error) {
@@ -71,8 +71,167 @@ export default function Index() {
     )
 
     return (
-        <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
-            <Text>Cardapio</Text>
+        <View style={styles.container}>
+
+
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
+                {getUniqueCategories().map((categoryId) => (
+                    <TouchableOpacity
+                        key={categoryId}
+                        onPress={() => setSelectedCategory(categoryId)}
+                        style={[
+                            styles.categoryButton,
+                            selectedCategory === categoryId ? styles.categoryButtonActive : null
+                        ]}
+                    >
+                        <Text style={[
+                            styles.categoryButtonText,
+                            selectedCategory === categoryId ? styles.categoryButtonTextActive : null
+                        ]}>
+                            {getCategoryName(categoryId)}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+
+            {loading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#0000ff" />
+                </View>
+            ) : (
+                <ScrollView style={styles.itemsContainer}>
+                    {filteredItems.map((item) => (
+                        <View key={item.id} style={styles.itemCard}>
+                            <Text style={styles.itemName}>{item.name}</Text>
+                            <Text style={styles.itemDescription}>{item.description}</Text>
+                            <View style={styles.itemFooter}>
+                                <View>
+                                    <Text style={styles.itemPrice}>
+                                        R$ {Number(item.price).toFixed(2).replace('.', ',')}
+                                    </Text>
+                                    <View style={[
+                                        styles.availabilityBadge,
+                                        item.isAvailable ? styles.availableBadge : styles.unavailableBadge
+                                    ]}>
+                                        <Text style={styles.availabilityText}>
+                                            {item.isAvailable ? 'Disponível' : 'Indisponível'}
+                                        </Text>
+                                    </View>
+                                </View>
+                                {item.imagemURL && (
+                                    <Image
+                                        source={{ uri: item.imagemURL }}
+                                        style={styles.itemImage}
+                                    />
+                                )}
+                            </View>
+                        </View>
+                    ))}
+                </ScrollView>
+            )}
         </View>
-    )
+    );
+
+
+
 }
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 16,
+        backgroundColor: '#f5f5f5',
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 16,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 16,
+    },
+    categoriesContainer: {
+        marginBottom: 30,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+    },
+    categoryButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        backgroundColor: '#e2e2e2',
+        marginRight: 8,
+        height: 40,
+    },
+    categoryButtonActive: {
+        backgroundColor: '#3b82f6',
+    },
+    categoryButtonText: {
+        color: '#374151',
+    },
+    categoryButtonTextActive: {
+        color: 'white',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    itemsContainer: {
+        
+    },
+    itemCard: {
+        backgroundColor: 'white',
+        borderRadius: 8,
+        padding: 16,
+        marginBottom: 16,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    itemName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    itemDescription: {
+        color: '#666',
+        marginTop: 8,
+    },
+    itemFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 16,
+    },
+    itemPrice: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    availabilityBadge: {
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+        marginTop: 4,
+    },
+    availableBadge: {
+        backgroundColor: '#dcfce7',
+    },
+    unavailableBadge: {
+        backgroundColor: '#fee2e2',
+    },
+    availabilityText: {
+        fontSize: 12,
+    },
+    itemImage: {
+        width: 96,
+        height: 96,
+        borderRadius: 4,
+    },
+});

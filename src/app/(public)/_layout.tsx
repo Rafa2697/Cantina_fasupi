@@ -16,6 +16,7 @@ export default function LayoutCliente() {
             name="index"
             options={{
               drawerLabel: "Inicio",
+              title: "Cardapio",
               drawerIcon: ({ color }) => (
                 <Feather name="home" size={24} color={color} />
               ),
