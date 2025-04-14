@@ -2,8 +2,8 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Drawer } from 'expo-router/drawer';
 import { Feather } from "@expo/vector-icons";
-import { Redirect } from 'expo-router'
 import { useAuth } from '@clerk/clerk-expo'
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function LayoutCliente() {
   const { isSignedIn } = useAuth()
@@ -15,28 +15,30 @@ export default function LayoutCliente() {
           <Drawer.Screen
             name="index"
             options={{
-              drawerLabel: "Inicio",
+              drawerLabel: "Cardapio",
               title: "Cardapio",
               drawerIcon: ({ color }) => (
-                <Feather name="home" size={24} color={color} />
+                <MaterialIcons name="menu-book" size={24} color={color} />
               ),
             }}
           />
           <Drawer.Screen
             name="loginAdmin"
             options={{
-              drawerLabel: "LoginAdmin",
+              drawerLabel: "Login Administrador",
+              title: "Login Administrador",
               drawerIcon: ({ color }) => (
-                <Feather name="user" size={24} color={color} />
+                <MaterialIcons name="admin-panel-settings" size={24} color={color} />
               ),
             }}
           />
           <Drawer.Screen
             name="loginGoogle"
             options={{
-              drawerLabel: "Login Google",
+              drawerLabel: "Login Alunos",
+              title: "Login Alunos",
               drawerIcon: ({ color }) => (
-                <Feather name="user" size={24} color={color} />
+                <Feather name="users" size={24} color={color} />
               ),
             }} />
         </Drawer>

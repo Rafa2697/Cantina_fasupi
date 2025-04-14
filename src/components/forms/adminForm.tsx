@@ -55,7 +55,7 @@ export default function AdminForm() {
                     await saveToken(data.token);
                 }
                 setIsLoading(false);
-                router.navigate('/(private)/(admin)');
+                router.push('/admin');
             } else {
                 setIsLoading(false);
                 Alert.alert('Erro de Login', data.error || 'Credenciais inválidas');
