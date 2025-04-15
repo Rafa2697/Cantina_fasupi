@@ -17,7 +17,7 @@ export default function SignIn() {
             if (isLoadding) return;
             setIsLoading(true)
 
-            const redirectUrl = Linking.createURL("(aluno)")
+            const redirectUrl = Linking.createURL("/aluno")
             const oAuthFlow = await googleOauth.startOAuthFlow({redirectUrl})
 
             if (oAuthFlow.authSessionResult?.type === "success") {
