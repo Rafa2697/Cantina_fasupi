@@ -27,45 +27,45 @@ export default function AdminForm() {
 
     const handleSubmit = async () => {
         setIsLoading(true);
-
+      
         const logindata = {
-            email: email,
-            password: password,
-        }
+          email,
+          password,
+        };
+      
         try {
-            const response = await fetch(`${APIURL}/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(logindata),
-            })
-
-            const data = await response.json();
-
-            const isValidate = data.password === password;
-            if (isValidate == false) {
-                setIsLoading(false);
-                Alert.alert('Erro de Login', 'Senha incorreta, tente novamente!');
-            }
-
-            if (isValidate == true) {
-                // Salva o token
-                if (data.token) {
-                    await saveToken(data.token);
-                }
-                setIsLoading(false);
-                router.push('/admin');
-            } else {
-                setIsLoading(false);
-                Alert.alert('Erro de Login', data.error || 'Credenciais inválidas');
-            }
-        } catch (error) {
+          const response = await fetch(`${APIURL}/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(logindata),
+          });
+      
+          const data = await response.json();
+      
+          if (!response.ok) {
+            // Resposta do backend com erro (401 ou 400)
+            throw new Error(data.error || 'Credenciais inválidas');
+          }
+      
+          if (data.token) {
+            await saveToken(data.token);
+            await AsyncStorage.setItem('@auth_user', JSON.stringify(data.user));
             setIsLoading(false);
-            Alert.alert('Erro de Login', 'Não foi possível realizar o login. Verifique suas credenciais e tente novamente.');
-            console.error(error);
+            router.push('/admin');
+          } else {
+            throw new Error('Token não recebido');
+          }
+        } catch (error: any) {
+          setIsLoading(false);
+          Alert.alert('Erro de Login', error.message || 'Erro ao tentar logar');
+          console.error('Login error:', error);
         }
-    }
+      };
+      
+
+    
     return (
         <View style={styles.container}>
             <TextInput

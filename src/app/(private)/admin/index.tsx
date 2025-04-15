@@ -1,43 +1,18 @@
 import { View, Text, StyleSheet, Button, ActivityIndicator } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Certifique-se de ter instalado este pacote
-import { useNavigation } from "@react-navigation/native"; // Se estiver usando React Navigation
-import { useAuth} from '@clerk/clerk-expo'
-import { useState, useEffect } from 'react';
-import useAuthAdm from '../../../hooks/useAuth'
+import { useAuthContext } from '../../../hooks/useAuth';
+
 
 export default function index() {
-    const navigation = useNavigation();
-    const { signOut } = useAuth()
-    const { isAuthenticated, loading, logout } = useAuthAdm();
-
-
-    const handleLogout = async () => {
-        try {
-            // Remove o token ou dados de autenticação armazenados
-            await AsyncStorage.removeItem("@auth_token");
-            signOut()
-            // Redireciona para a tela de login
-            navigation.navigate("(public)"); // Substitua "Login" pelo nome da sua tela de login
-        } catch (error) {
-            console.error("Erro ao deslogar:", error);
-        }
-    };
-    useEffect(() => {
-        if (!loading && !isAuthenticated) {
-            navigation.navigate('(Public)');
-        }
-    }, [isAuthenticated, loading]);
-
-    if (loading) {
-        return <ActivityIndicator />;
-    }
+    const { user, logout } = useAuthContext();;
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Admin</Text>
-            <Text style={styles.text}>Tela de Login do Administrador</Text>
-            <Button title="Sair" onPress={handleLogout} />
-        </View>
+        
+            <View style={styles.container}>
+                <Text style={styles.title}>{user?.name}</Text>
+                <Text style={styles.text}>Tela de Login do Administrador</Text>
+                <Button title="Sair" onPress={logout} />
+            </View>
+        
     );
 }
 

@@ -2,7 +2,6 @@ import { View, Text, StyleSheet } from "react-native"
 import  AdminForm  from "../../components/forms/adminForm"
 
 export default function SignAdmin() {
-
    
     return (
         <View style={styles.container}>

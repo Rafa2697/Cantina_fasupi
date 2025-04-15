@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import { useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 
-export default function useAuth() {
+export function useAuthAdm() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
 
@@ -25,7 +27,7 @@ export default function useAuth() {
         try {
             await AsyncStorage.removeItem('@auth_token');
             setIsAuthenticated(false);
-            router.replace('/');
+            router.replace('/(public)');
         } catch (error) {
             console.error('Erro ao fazer logout:', error);
         }
@@ -33,3 +35,5 @@ export default function useAuth() {
 
     return { isAuthenticated, loading, logout };
 }
+
+export const useAuthContext = () => useContext(AuthContext);
