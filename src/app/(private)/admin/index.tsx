@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Button, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, Button,} from "react-native";
 import { useAuthContext } from '../../../hooks/useAuth';
 import { router } from 'expo-router';
 

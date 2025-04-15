@@ -2,11 +2,9 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Drawer } from 'expo-router/drawer';
 import { Feather } from "@expo/vector-icons";
-import { useAuth } from '@clerk/clerk-expo'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function LayoutCliente() {
-  const { isSignedIn } = useAuth()
   
   return (
   
