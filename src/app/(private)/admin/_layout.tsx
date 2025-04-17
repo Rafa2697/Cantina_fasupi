@@ -5,6 +5,8 @@ import { Feather } from "@expo/vector-icons";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useAuthContext } from '@/hooks/useAuth';
 import { router } from 'expo-router';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export default function LayoutAdmin() {
     const {logout} = useAuthContext();
@@ -29,7 +31,7 @@ export default function LayoutAdmin() {
                         drawerLabel: "Cadastro",
                         title: "Cadastro",
                         drawerIcon: ({ color }) => (
-                            <MaterialIcons name="menu-book" size={24} color={color} />
+                            <AntDesign name="form" size={24} color={color} />
                         ),
                     }}
                 />
@@ -39,12 +41,12 @@ export default function LayoutAdmin() {
                         drawerLabel: "Pedidos",
                         title: "Pedidos",
                         drawerIcon: ({ color }) => (
-                            <MaterialIcons name="admin-panel-settings" size={24} color={color} />
+                            <MaterialCommunityIcons name="food" size={24} color={color} />
                         ),
                     }}
                 />
                 <Drawer.Screen
-                    name="sem rota"
+                    name="logout"
                     options={{
                         drawerLabel: "Sair",
                         title: "Sair",
