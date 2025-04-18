@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Button, ActivityIndicator, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { format, parseISO } from 'date-fns';
 
 interface DataItem {
@@ -21,15 +21,20 @@ interface DataItem {
 }
 const API = process.env.EXPO_PUBLIC_APIURL;
 
-export default function OrdersReceived({ refreshTrigger }: { refreshTrigger: boolean }) {
+export default function OrdersReceived() {
   const [data, setData] = useState<DataItem[]>([]);
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API}/orderItems`);
+      const response = await fetch(`${API}/orders`);
       const result: DataItem[] = await response.json();
+
+      if (!Array.isArray(result)) {
+        console.error('Resposta da API não é um array: ', result)
+        return
+      }
       setData(result);
     } catch (error) {
       console.error('Erro ao buscar dados: ', error);
@@ -39,7 +44,7 @@ export default function OrdersReceived({ refreshTrigger }: { refreshTrigger: boo
 
   useEffect(() => {
     fetchData();
-  }, [refreshTrigger]);
+  }, []);
 
   const updateStatus = async (orderId: string) => {
     const nowISOString = new Date().toISOString();
@@ -67,8 +72,27 @@ export default function OrdersReceived({ refreshTrigger }: { refreshTrigger: boo
     }
   };
 
+  const deleteOrders = async ({ onDeleteCompleted }: {onDeleteCompleted: () => void}) => {
+    try {
+      await fetch(`${API}/orders`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({deleteMany:true})
+        
+      })
+      onDeleteCompleted()
+    } catch (error) {
+      console.error("Erro ao deletar esse pedido: ", error)
+    }
+  }
+
   const renderItem = ({ item: order }: { item: DataItem }) => (
+
+
     <View style={styles.card}>
+
       <Text style={styles.textSmall}>Cliente: {order.userName}</Text>
       <Text style={styles.textTiny}>Identificação: {order.userEmail}</Text>
       <Text style={styles.textSmall}>Status: {order.status}</Text>
@@ -79,7 +103,7 @@ export default function OrdersReceived({ refreshTrigger }: { refreshTrigger: boo
         Pedido concluído: {format(parseISO(order.updatedAt), "dd/MM/yyyy 'às' HH:mm")}
       </Text>
 
-      {order.items.map(item => (
+      {order.items?.map(item => (
         <View key={item.id} style={styles.itemContainer}>
           <Text style={styles.itemName}>{item.name}</Text>
           <Text style={styles.itemDetails}>
@@ -117,6 +141,9 @@ export default function OrdersReceived({ refreshTrigger }: { refreshTrigger: boo
           contentContainerStyle={{ paddingBottom: 100 }}
         />
       )}
+      <TouchableOpacity onPress={() => deleteOrders({ onDeleteCompleted: () => fetchData() })}>
+        <Text>Deletar pedidos comcluidos</Text>
+      </TouchableOpacity>
     </View>
   );
 }
