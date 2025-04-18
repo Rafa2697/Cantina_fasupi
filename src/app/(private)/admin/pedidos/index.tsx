@@ -79,7 +79,7 @@ export default function OrdersReceived() {
         headers: {
           "Content-Type":"application/json"
         },
-        body:JSON.stringify({deleteMany:true})
+        body:JSON.stringify({status:"Concluído"})
         
       })
       onDeleteCompleted()
@@ -141,14 +141,25 @@ export default function OrdersReceived() {
           contentContainerStyle={{ paddingBottom: 100 }}
         />
       )}
-      <TouchableOpacity onPress={() => deleteOrders({ onDeleteCompleted: () => fetchData() })}>
-        <Text>Deletar pedidos comcluidos</Text>
+      <TouchableOpacity style={styles.btnDelete} onPress={() => deleteOrders({ onDeleteCompleted: () => fetchData() })}>
+        <Text style={styles.txtDelete}>Deletar pedidos concluídos</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  btnDelete:{
+    padding:8,
+    margin:"auto",
+    backgroundColor:'red',
+    elevation: 4,
+    borderRadius: 8,
+    },
+    txtDelete:{
+      color:"white",
+      fontSize: 18,
+    },
   container: {
     flex: 1,
     padding: 16,
