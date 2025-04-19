@@ -77,8 +77,6 @@ export default function OrdersClient() {
     const filteredData = data.filter(order => order.userEmail === user.primaryEmailAddress?.emailAddress);
 
     const renderItem = ({ item }: { item: DataItem }) => (
-
-
         <View style={styles.card}>
             <Text style={styles.infoText}>Cliente: {item.userName}</Text>
             <Text style={styles.infoText}>Status: {item.status}</Text>
@@ -89,7 +87,7 @@ export default function OrdersClient() {
                     : 'Preparando...'}
             </Text>
 
-            {item.items.map(subItem => (
+            {item.items?.map(subItem => (
                 <View key={subItem.id} style={styles.item}>
                     <Text style={styles.itemName}>{subItem.name}</Text>
                     <Text style={styles.itemDetails}>
@@ -97,7 +95,6 @@ export default function OrdersClient() {
                     </Text>
                 </View>
             ))}
-
 
             <Text style={styles.total}>Total: R$ {(Number(item.totalPrice).toFixed(2)).replace('.', ',')}</Text>
 
