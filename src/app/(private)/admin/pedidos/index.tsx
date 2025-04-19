@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { format, parseISO } from 'date-fns';
-import * as Notifications from 'expo-notifications';
-import { registerForPushNotificationsAsync, sendPushNotification } from '@/services/notifications';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 interface DataItem {
   id: string;
@@ -29,24 +27,7 @@ export default function OrdersReceived() {
   const [loading, setLoading] = useState(false);
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>(undefined);
 
-  useEffect(() => {
-    // Registrar para notificações push
-    registerForPushNotificationsAsync().then((token: string | undefined) => {
-      if (token) {
-        setExpoPushToken(token);
-        AsyncStorage.setItem('expoPushToken', token);
-      }
-    });
 
-    // Configurar listener para notificações recebidas
-    const notificationListener = Notifications.addNotificationReceivedListener((notification: Notifications.Notification) => {
-      console.log('Notificação recebida:', notification);
-    });
-
-    return () => {
-      Notifications.removeNotificationSubscription(notificationListener);
-    };
-  }, []);
 
   const fetchData = async () => {
     setLoading(true);
@@ -59,22 +40,6 @@ export default function OrdersReceived() {
         return
       }
 
-      // Verificar se há novos pedidos
-      const newOrders = result.filter(order => 
-        !data.some(existingOrder => existingOrder.id === order.id)
-      );
-
-      // Enviar notificação para novos pedidos
-      if (newOrders.length > 0 && expoPushToken) {
-        newOrders.forEach(order => {
-          sendPushNotification(
-            expoPushToken,
-            'Novo Pedido Recebido!',
-            `Pedido de ${order.userName} - Total: R$ ${Number(order.totalPrice).toFixed(2)}`
-          );
-        });
-      }
-
       setData(result);
     } catch (error) {
       console.error('Erro ao buscar dados: ', error);
@@ -84,6 +49,11 @@ export default function OrdersReceived() {
 
   useEffect(() => {
     fetchData();
+    // Configura o polling a cada 30 segundos
+    const intervalId = setInterval(fetchData, 30000);
+    console.log(intervalId)
+    // Limpa o intervalo quando o componente é desmontado
+    return () => clearInterval(intervalId);
   }, []);
 
   const updateStatus = async (orderId: string) => {
@@ -112,15 +82,15 @@ export default function OrdersReceived() {
     }
   };
 
-  const deleteOrders = async ({ onDeleteCompleted }: {onDeleteCompleted: () => void}) => {
+  const deleteOrders = async ({ onDeleteCompleted }: { onDeleteCompleted: () => void }) => {
     try {
       await fetch(`${API}/orders`, {
         method: "DELETE",
         headers: {
-          "Content-Type":"application/json"
+          "Content-Type": "application/json"
         },
-        body:JSON.stringify({deleteMany: true})
-        
+        body: JSON.stringify({ deleteMany: true })
+
       })
       onDeleteCompleted()
     } catch (error) {
@@ -189,17 +159,17 @@ export default function OrdersReceived() {
 }
 
 const styles = StyleSheet.create({
-  btnDelete:{
-    padding:8,
-    margin:"auto",
-    backgroundColor:'red',
+  btnDelete: {
+    padding: 8,
+    margin: "auto",
+    backgroundColor: 'red',
     elevation: 4,
     borderRadius: 8,
-    },
-    txtDelete:{
-      color:"white",
-      fontSize: 18,
-    },
+  },
+  txtDelete: {
+    color: "white",
+    fontSize: 18,
+  },
   container: {
     flex: 1,
     padding: 16,
