@@ -32,7 +32,7 @@ export default function OrdersClient() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${API}/orders`); // Atualize com o endpoint real
+            const response = await fetch(`${API}/orders`);
             const result: DataItem[] = await response.json();
             setData(result);
         } catch (error) {
@@ -42,9 +42,8 @@ export default function OrdersClient() {
     };
 
     const deletarPedidos = async (id: string) => {
-        console.log(id)
         try {
-            const response = await fetch(`${API}/ordes`, {
+            const response = await fetch(`${API}/orders`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -64,6 +63,12 @@ export default function OrdersClient() {
 
     useEffect(() => {
         fetchData();
+        
+        // Configura o polling a cada 30 segundos
+        const intervalId = setInterval(fetchData, 30000);
+        console.log(intervalId)
+        // Limpa o intervalo quando o componente é desmontado
+        return () => clearInterval(intervalId);
     }, []);
 
     if (!user) {

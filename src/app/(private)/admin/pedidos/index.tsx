@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { format, parseISO } from 'date-fns';
+import * as Notifications from 'expo-notifications';
+import { registerForPushNotificationsAsync, sendPushNotification } from '@/services/notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface DataItem {
   id: string;
@@ -24,6 +27,26 @@ const API = process.env.EXPO_PUBLIC_APIURL;
 export default function OrdersReceived() {
   const [data, setData] = useState<DataItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const [expoPushToken, setExpoPushToken] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    // Registrar para notificações push
+    registerForPushNotificationsAsync().then((token: string | undefined) => {
+      if (token) {
+        setExpoPushToken(token);
+        AsyncStorage.setItem('expoPushToken', token);
+      }
+    });
+
+    // Configurar listener para notificações recebidas
+    const notificationListener = Notifications.addNotificationReceivedListener((notification: Notifications.Notification) => {
+      console.log('Notificação recebida:', notification);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener);
+    };
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);
@@ -35,6 +58,23 @@ export default function OrdersReceived() {
         console.error('Resposta da API não é um array: ', result)
         return
       }
+
+      // Verificar se há novos pedidos
+      const newOrders = result.filter(order => 
+        !data.some(existingOrder => existingOrder.id === order.id)
+      );
+
+      // Enviar notificação para novos pedidos
+      if (newOrders.length > 0 && expoPushToken) {
+        newOrders.forEach(order => {
+          sendPushNotification(
+            expoPushToken,
+            'Novo Pedido Recebido!',
+            `Pedido de ${order.userName} - Total: R$ ${Number(order.totalPrice).toFixed(2)}`
+          );
+        });
+      }
+
       setData(result);
     } catch (error) {
       console.error('Erro ao buscar dados: ', error);
@@ -79,7 +119,7 @@ export default function OrdersReceived() {
         headers: {
           "Content-Type":"application/json"
         },
-        body:JSON.stringify({status:"Concluído"})
+        body:JSON.stringify({deleteMany: true})
         
       })
       onDeleteCompleted()

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useUser } from '@clerk/clerk-expo'
 
+// Interface que define a estrutura de um item do cardápio
 interface DataItem {
     id: string;
     name: string;
@@ -22,11 +23,13 @@ interface DataItem {
     isAvailable: boolean;
 }
 
+// Interface que define a estrutura de uma categoria
 interface Category {
     id: string;
     name: string;
 }
 
+// Interface que estende DataItem para incluir a quantidade selecionada
 interface SelectedItem extends DataItem {
     quantity: number;
 }
@@ -34,6 +37,7 @@ interface SelectedItem extends DataItem {
 const API = process.env.EXPO_PUBLIC_APIURL || 'http://localhost:3000';
 
 export default function CardapioClient() {
+    // Estados para gerenciar os dados e a interface
     const [data, setData] = useState<DataItem[]>([]);
     const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -41,17 +45,18 @@ export default function CardapioClient() {
     const [loading, setLoading] = useState(true);
     const { user } = useUser()
 
-
-
+    // Efeito que carrega os dados iniciais quando o componente é montado
     useEffect(() => {
         fetchData();
         fetchCategories();
     }, []);
 
+    // Função que busca os itens do cardápio da API
     const fetchData = async () => {
         try {
             const response = await fetch(`${API}/foods`);
             const result = await response.json();
+            // Sanitiza os preços para garantir que são números
             const sanitized = result.map((item: any) => ({
                 ...item,
                 price: typeof item.price === 'number' ? item.price : Number(item.price) || 0,
@@ -65,6 +70,7 @@ export default function CardapioClient() {
         }
     };
 
+    // Função que busca as categorias da API
     const fetchCategories = async () => {
         try {
             const response = await fetch(`${API}/categories`);
@@ -75,21 +81,25 @@ export default function CardapioClient() {
         }
     };
 
+    // Função que retorna o nome da categoria baseado no ID
     const getCategoryName = (categoryId: string) => {
         if (categoryId === 'all') return 'Todos';
         const category = categories.find(cat => cat.id === categoryId);
         return category ? category.name : categoryId;
     };
 
+    // Função que retorna uma lista de IDs de categorias únicas
     const getUniqueCategories = () => {
         const uniqueCategoryIds = ['all', ...new Set(data.map(item => item.categoryId))];
         return uniqueCategoryIds;
     };
 
+    // Filtra os itens baseado na categoria selecionada
     const filteredItems = data.filter(item =>
         selectedCategory === 'all' ? true : item.categoryId === selectedCategory
     );
 
+    // Função que adiciona um item ao carrinho
     const handleAddItem = (item: DataItem) => {
         if (!item.isAvailable) return;
 
@@ -104,10 +114,12 @@ export default function CardapioClient() {
         });
     };
 
+    // Função que remove um item do carrinho
     const handleRemoveItem = (itemId: string) => {
         setSelectedItems(prev => prev.filter(item => item.id !== itemId));
     };
 
+    // Função que envia o pedido para a API
     const handleSubmitOrder = async () => {
         if (!user?.primaryEmailAddress) {
             alert('Você precisa estar logado para fazer o pedido')
