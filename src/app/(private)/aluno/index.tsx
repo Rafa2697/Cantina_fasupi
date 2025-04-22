@@ -11,6 +11,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { useUser } from '@clerk/clerk-expo'
+import * as Notifications from 'expo-notifications'
 
 // Interface que define a estrutura de um item do cardápio
 interface DataItem {
@@ -36,6 +37,14 @@ interface SelectedItem extends DataItem {
 
 const API = process.env.EXPO_PUBLIC_APIURL || 'http://localhost:3000';
 
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+    }),
+  });
+
 export default function CardapioClient() {
     // Estados para gerenciar os dados e a interface
     const [data, setData] = useState<DataItem[]>([]);
@@ -45,6 +54,15 @@ export default function CardapioClient() {
     const [loading, setLoading] = useState(true);
     const { user } = useUser()
 
+    async function scheduleNotification() {
+        await Notifications.scheduleNotificationAsync({
+            content: {
+                title: `Pedido recebido! 😋`,
+                body: `Seu pedido  foi recebido com sucesso!`
+            },
+            trigger: null,
+        })
+    }
     // Efeito que carrega os dados iniciais quando o componente é montado
     useEffect(() => {
         fetchData();
@@ -140,8 +158,8 @@ export default function CardapioClient() {
             });
 
             if (response.ok) {
-                Alert.alert("Sucesso", "Pedido enviado com sucesso!");
                 setSelectedItems([]);
+                scheduleNotification()
             }
         } catch (error) {
             console.error("Erro ao enviar pedido:", error);
@@ -217,7 +235,7 @@ export default function CardapioClient() {
                             ) : null}
                         </View>
                         <View style={styles.cardFooter}>
-                            <Text style={styles.price}>R$ {Number(item.price.toFixed(2).replace('.', ','))}</Text>
+                            <Text style={styles.price}>R$ {Number(item.price).toFixed(2).replace('.', ',')}</Text>
                             <View style={styles.availabilityContainer}>
                                 <Text style={[
                                     styles.availability,
