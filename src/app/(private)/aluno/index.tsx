@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     Image,
     Alert,
-    FlatList,
     StyleSheet,
     ActivityIndicator,
 } from 'react-native';
