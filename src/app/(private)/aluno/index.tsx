@@ -39,11 +39,11 @@ const API = process.env.EXPO_PUBLIC_APIURL || 'http://localhost:3000';
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
     }),
-  });
+});
 
 export default function CardapioClient() {
     // Estados para gerenciar os dados e a interface
@@ -79,7 +79,7 @@ export default function CardapioClient() {
                 ...item,
                 price: typeof item.price === 'number' ? item.price : Number(item.price) || 0,
             }));
-    
+
             setData(sanitized);
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
