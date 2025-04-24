@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 
+
+
 interface DataItem {
     id: string;
     name: string;
@@ -42,7 +44,8 @@ export default function CadastroItens() {
         isAvailable: false
     });
     const [editingId, setEditingId] = useState<string | null>(null);
-
+   
+        
     const fetchData = async () => {
         setLoading(true);
         try {

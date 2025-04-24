@@ -8,6 +8,7 @@ import { router } from 'expo-router';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
+
 export default function LayoutAdmin() {
     const {logout} = useAuthContext();
 
