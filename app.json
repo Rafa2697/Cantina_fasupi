@@ -19,6 +19,7 @@
       },
       "package": "com.fasupi.cantina",
       "versionCode": 1,
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
