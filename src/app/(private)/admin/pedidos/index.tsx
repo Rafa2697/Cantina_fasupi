@@ -2,16 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Button } from 'react-native';
 import { format, parseISO } from 'date-fns';
 import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
-
-
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-    }),
-});
 
 
 interface DataItem {
@@ -180,7 +170,6 @@ export default function OrdersReceived() {
       <TouchableOpacity style={styles.btnDelete} onPress={() => deleteOrders({ onDeleteCompleted: () => fetchData() })}>
         <Text style={styles.txtDelete}>Deletar pedidos concluídos</Text>
       </TouchableOpacity>
-      <Button title="Notificar" onPress={handleCallNotification} />
     </View>
   );
 }

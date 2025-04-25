@@ -4,6 +4,7 @@ import { Drawer } from 'expo-router/drawer';
 import { Feather } from "@expo/vector-icons";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
+
 export default function LayoutCliente() {
   
   return (

@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator, StyleSheet } from "react-native";
-import { Ionicons } from '@expo/vector-icons';
 import { useState, useEffect } from "react"
+import { useNotification } from "@/contexts/NotificationContext";
 
 interface DataItem {
     id: string;
@@ -23,6 +23,13 @@ export default function Index() {
     const [loading, setLoading] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
     const [categories, setCategories] = useState<Category[]>([]);
+    const { expoPushToken, notification, error } = useNotification();
+
+    if(error) {
+        return <Text>Erro ao buscar dados: {error.message}</Text>
+    }
+
+    console.log(notification, null, 2)
 
     const fetchData = async () => {
         setLoading(true)
@@ -44,9 +51,6 @@ export default function Index() {
             console.error('Erro ao buscar categorias:', error);
         }
     };
-
-
-
     useEffect(() => {
         fetchData();
         fetchCategories();
@@ -72,8 +76,6 @@ export default function Index() {
 
     return (
         <View style={styles.container}>
-
-
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoriesContainer}>
                 {getUniqueCategories().map((categoryId) => (
                     <TouchableOpacity
@@ -180,7 +182,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     itemsContainer: {
-        
+
     },
     itemCard: {
         backgroundColor: 'white',

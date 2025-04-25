@@ -2,7 +2,7 @@
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Drawer } from 'expo-router/drawer';
 import { Feather } from "@expo/vector-icons";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
 import { useAuthContext } from '@/hooks/useAuth';
 import { router } from 'expo-router';
 import AntDesign from '@expo/vector-icons/AntDesign';
