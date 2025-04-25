@@ -29,7 +29,7 @@ export default function Index() {
         return <Text>Erro ao buscar dados: {error.message}</Text>
     }
 
-    console.log(notification, null, 2)
+    console.log(notification, null, expoPushToken)
 
     const fetchData = async () => {
         setLoading(true)
