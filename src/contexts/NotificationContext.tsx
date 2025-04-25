@@ -45,8 +45,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 }) => {
     // Estados para gerenciar token, notificação e erros
     const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
-    const [notification, setNotification] =
-        useState<Notifications.Notification | null>(null);
+    const [notification, setNotification] = useState<Notifications.Notification | null>(null);
     const [error, setError] = useState<Error | null>(null);
 
     // Refs para armazenar as inscrições dos listeners
@@ -61,22 +60,20 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         );
 
         // Listener para quando uma notificação é recebida
-        notificationListener.current =
-            Notifications.addNotificationReceivedListener((notification) => {
-                console.log("🔔 Notification Received: ", notification);
-                setNotification(notification);
-            });
+        notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+            console.log("🔔 Notification Received: ", notification);
+            setNotification(notification);
+        });
 
         // Listener para quando o usuário interage com uma notificação
-        responseListener.current =
-            Notifications.addNotificationResponseReceivedListener((response) => {
-                console.log(
-                    "🔔 Notification Response: ",
-                    JSON.stringify(response, null, 2),
-                    JSON.stringify(response.notification.request.content.data, null, 2)
-                );
-                // Aqui você pode adicionar lógica para lidar com a resposta da notificação
-            });
+        responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+            console.log(
+                "🔔 Notification Response: ",
+                JSON.stringify(response, null, 2),
+                JSON.stringify(response.notification.request.content.data, null, 2)
+            );
+            // Aqui você pode adicionar lógica para lidar com a resposta da notificação
+        });
 
         // Cleanup: remove os listeners quando o componente é desmontado
         return () => {
