@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Button } from 'react-native';
+import { View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { format, parseISO } from 'date-fns';
 import * as Notifications from 'expo-notifications';
-
+import { OrderNotificationService } from '@/services/notifications';
 
 interface DataItem {
   id: string;
@@ -26,24 +26,28 @@ const API = process.env.EXPO_PUBLIC_APIURL;
 export default function OrdersReceived() {
   const [data, setData] = useState<DataItem[]>([]);
   const [loading, setLoading] = useState(false);
+  const notificationService = new OrderNotificationService();
 
-  async function handleCallNotification(){
-    try {
-      console.log("Função handleCallNotification foi chamada");
-      const {status} = await Notifications.getPermissionsAsync()
-      if (status !== "granted"){
-        const {status: newStatus} = await Notifications.requestPermissionsAsync()
-        if(newStatus !== "granted"){
-          return
-        }
-      }
-      let token = (await Notifications.getExpoPushTokenAsync())
-      console.log("Token: ", token)
-    } catch (error) {
-      console.error("Erro ao chamar notificação:", error);
-    }
+  useEffect(() => {
+    // Configura o handler de notificações
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
+    });
 
-  }
+    // Inicia o monitoramento de pedidos
+    notificationService.startListening();
+
+    // Cleanup quando o componente for desmontado
+    return () => {
+      notificationService.stopListening();
+    };
+  }, []);
+
+
 
   const fetchData = async () => {
     setLoading(true);
@@ -65,7 +69,7 @@ export default function OrdersReceived() {
 
   useEffect(() => {
     fetchData();
-   
+
     // Configura o polling a cada 30 segundos
     const intervalId = setInterval(fetchData, 30000);
     // Limpa o intervalo quando o componente é desmontado
